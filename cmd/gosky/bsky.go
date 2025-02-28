@@ -193,23 +193,27 @@ var bskyGetFeedCmd = &cli.Command{
 			}
 		} else {
 			algo := "reverse-chronological"
-			tl, err := appbsky.FeedGetTimeline(ctx, xrpcc, algo, "", int64(cctx.Int("count")))
-			if err != nil {
-				return err
-			}
-
-			for i := len(tl.Feed) - 1; i >= 0; i-- {
-				it := tl.Feed[i]
-				if raw {
-					jsonPrint(it)
-				} else {
-					prettyPrintPost(it, uris)
+			cursor := ""
+			for i := 0; i < 30; i++ {
+				tl, err := appbsky.FeedGetTimeline(ctx, xrpcc, algo, cursor, 100)
+				if err != nil {
+					return err
 				}
+
+				for i := 0; i < len(tl.Feed); i++ {
+					it := tl.Feed[i]
+					if raw {
+						jsonPrint(it)
+					} else {
+						prettyPrintPost(it, uris)
+					}
+				}
+
+				cursor = *tl.Cursor
 			}
 		}
 
 		return nil
-
 	},
 }
 
@@ -242,7 +246,6 @@ var bskyActorGetSuggestionsCmd = &cli.Command{
 		fmt.Println(string(b))
 
 		return nil
-
 	},
 }
 
@@ -288,7 +291,6 @@ var bskyLikeCmd = &cli.Command{
 		}
 		_ = out
 		return nil
-
 	},
 }
 

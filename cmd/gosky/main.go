@@ -110,7 +110,7 @@ func run(args []string) {
 }
 
 func jsonPrint(i any) {
-	b, err := json.MarshalIndent(i, "", "  ")
+	b, err := json.Marshal(i)
 	if err != nil {
 		panic(err)
 	}
